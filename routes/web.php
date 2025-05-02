@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\YoutubeController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,3 +20,5 @@ Route::post('register', [AuthController::class, 'register'])->name('register.sto
 Route::post('login/email', [AuthController::class, 'login_email'])->middleware('throttle:5,1')->name('login.email.attempt');
 Route::post('login/username', [AuthController::class, 'login_username'])->middleware('throttle:5,1')->name('login.username.attempt');
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::post('yt', YoutubeController::class)->name('yt.url.attempt');

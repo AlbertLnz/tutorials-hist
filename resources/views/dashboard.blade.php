@@ -8,3 +8,8 @@
     Logout
   </button>
 </form>
+
+<form action="{{ route('yt.url.attempt') }}" method="POST">
+  @csrf
+  <input type="text" name="yt-url" placeholder="https://www.youtube.com/watch?v=Lk_lNSfa3kk">
+</form>
