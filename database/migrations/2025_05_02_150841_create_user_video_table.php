@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('video_id');
             $table->foreign('video_id')->references('id')->on('videos')->onDelete('cascade');
+            $table->enum('status', ['Todo', 'In Progress', 'Completed']);
             $table->time('timestamp')->nullable();
         });
     }

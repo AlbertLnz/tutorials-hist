@@ -18,6 +18,7 @@ class YoutubeController extends Controller
         $parsed = $this->parseYoutubeUrl($validated['yt-url']);
         $videoId = $parsed['videoId'];
         $timestamp = $parsed['timestamp'];
+        $status = $timestamp ? 'In Progress' : 'Todo';
 
         $info = $this->getYoutubeAPIData($videoId);
 
@@ -36,7 +37,7 @@ class YoutubeController extends Controller
         // Actualizar la tabla pivote
         $user = auth()->user();
         $user->videos()->syncWithoutDetaching([
-            $videoId => ['timestamp' => $timestamp]
+            $videoId => ['status' => $status, 'timestamp' => $timestamp]
         ]);
 
         return response()->json(['message' => 'Video asociado correctamente con el usuario']);
