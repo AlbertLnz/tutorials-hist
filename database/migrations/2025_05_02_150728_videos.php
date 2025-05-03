@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('channelId');
             $table->string('channelTitle');
             $table->string('category');
+            $table->integer('seconds');
             $table->dateTime('publishedAt');
             $table->timestamps();
         });

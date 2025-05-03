@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use App\Models\Video;
+use Illuminate\Support\Facades\Auth;
+use DateInterval;
 
 class YoutubeController extends Controller
 {
 
-    public function __invoke(Request $request)
+    public function post_new_yt_video(Request $request)
     {
         $validated = $request->validate([
             'yt-url' => ['required', 'string'],
@@ -22,6 +25,8 @@ class YoutubeController extends Controller
 
         $info = $this->getYoutubeAPIData($videoId);
 
+        // dd($info);
+
         Video::updateOrCreate(
             ['id' => $videoId],
             [
@@ -30,6 +35,7 @@ class YoutubeController extends Controller
                 'channelId' => $info['items'][0]['snippet']['channelId'],
                 'channelTitle' => $info['items'][0]['snippet']['channelTitle'],
                 'category' => $info['items'][0]['snippet']['categoryId'],
+                'seconds' => $this->durationToSeconds($info['items'][0]['contentDetails']['duration']),
                 'publishedAt' => $info['items'][0]['snippet']['publishedAt']
             ]
         );
@@ -40,8 +46,29 @@ class YoutubeController extends Controller
             $videoId => ['status' => $status, 'timestamp' => $timestamp]
         ]);
 
-        return response()->json(['message' => 'Video asociado correctamente con el usuario']);
+        return redirect()->route('dashboard');
+        // return response()->json(['message' => 'Video asociado correctamente con el usuario']);
     }
+
+    public function get_all_user_videos(Request $request)
+    {
+        if (Auth::user()->id) {
+
+            $user = User::find(Auth::user()->id);
+            $videos = $user->videos()->get();
+
+            // dd($videos);
+
+            return view('dashboard', [
+                'user' => $user,
+                'videos' => $videos
+            ]);
+
+            // return response()->json(['user' => $user, 'videos' => $videos], 200);
+        }
+    }
+
+    // ----------------------------
 
     private function getYoutubeVideoId($url)
     {
@@ -65,7 +92,7 @@ class YoutubeController extends Controller
 
         $response = Http::get($url, [
             'id' => $videoId,
-            'part' => 'snippet,statistics,recordingDetails',
+            'part' => 'snippet,statistics,recordingDetails,contentDetails',
             'key' => $apiKey,
         ]);
 
@@ -118,5 +145,12 @@ class YoutubeController extends Controller
             'videoId' => $videoId,
             'timestamp' => $timestamp,
         ];
+    }
+
+    private function durationToSeconds($duration)
+    {
+        $interval = new DateInterval($duration);
+        $seconds = ($interval->h * 3600) + ($interval->i * 60) + $interval->s;
+        return $seconds;
     }
 }

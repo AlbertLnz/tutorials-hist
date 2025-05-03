@@ -13,7 +13,7 @@ Route::view('register', 'register')->name('register');
 Route::get('login', function () {
     return view('login');
 })->name('login');
-Route::view('dashboard', view: 'dashboard')->middleware('auth')->name('dashboard');
+// Route::view('dashboard', view: 'dashboard')->middleware('auth')->name(name: 'dashboard');
 
 
 Route::post('register', [AuthController::class, 'register'])->name('register.store');
@@ -21,4 +21,5 @@ Route::post('login/email', [AuthController::class, 'login_email'])->middleware('
 Route::post('login/username', [AuthController::class, 'login_username'])->middleware('throttle:5,1')->name('login.username.attempt');
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::post('yt', YoutubeController::class)->name('yt.url.attempt');
+Route::post('yt', [YoutubeController::class, 'post_new_yt_video'])->name('yt.url.attempt');
+Route::get('dashboard', [YoutubeController::class, 'get_all_user_videos'])->middleware('auth')->name('dashboard');

@@ -49,6 +49,6 @@ class User extends Authenticatable
 
     public function videos()
     {
-        return $this->belongsToMany(Video::class, 'user_video');
+        return $this->belongsToMany(Video::class, 'user_video')->withPivot('status', 'timestamp');
     }
 }
